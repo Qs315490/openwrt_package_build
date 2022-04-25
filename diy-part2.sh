@@ -18,3 +18,5 @@ ln -s /usr/bin/upx /workdir/openwrt/staging_dir/host/bin/
 
 #允许root用户编译
 export FORCE_UNSAFE_CONFIGURE=1
+
+./script/feeds uninstall dpdk
