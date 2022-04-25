@@ -64,7 +64,9 @@ jobs:
         URL="${SDK_URL}${VERSION}/targets/${DIR}/openwrt-sdk-${VERSION}-${ARCH_NAME}_gcc-8.4.0_musl.Linux-${ARCH}.tar.xz"
         echo $URL
         curl -fL -m 60 -o sdk.tar.xz $URL
-        tar -xf sdk.tar.xz
+        tar -xf sdk.tar.xz -C /workdir
+        ls -l /workdir
+        mv /workdir/openwrt-sdk* /workdir/openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
     - name: Load custom feeds
