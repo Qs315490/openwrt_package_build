@@ -12,3 +12,9 @@
 
 # Modify default IP
 #sed -i 's/192.168.1.1/192.168.50.5/g' package/base-files/files/bin/config_generate
+
+# 报错修复
+ln -s /usr/bin/upx /workdir/openwrt/staging_dir/host/bin/
+
+#允许root用户编译
+export FORCE_UNSAFE_CONFIGURE=1
