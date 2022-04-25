@@ -17,12 +17,12 @@ on:
       Arch:
         description: '目标架构'
         default: 'x86_64'
-      VERSION:
+      Version:
         description: '版本号'
         default: '21.02.3'
 
 env:
-  SDK_URL: https://downloads.openwrt.org/releases/$VERSION/targets/
+  SDK_URL: https://downloads.openwrt.org/releases/${{ github.event.inputs.Version }}/targets/
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .config
   DIY_P1_SH: diy-part1.sh
@@ -51,11 +51,11 @@ jobs:
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
 
-    - name: Clone source code
+    - name: Download SDK
       working-directory: /workdir
       run: |
         df -hT $PWD
-        if [[ $Arch == "x86_64" ]]; then
+        if [[ ${{ github.event.inputs.Arch }} == "x86_64" ]]; then
           DIR="x86/64"
         fi
         URL="$SDK_URL/$DIR/openwrt-sdk-$VERSION-$Arch_gcc-8.4.0_musl.Linux-$Arch.tar.xz"
