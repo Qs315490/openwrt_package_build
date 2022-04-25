@@ -59,8 +59,9 @@ jobs:
         df -hT $PWD
         if [[ ${ARCH} == "x86_64" ]]; then
           export DIR="x86/64"
+          export ARCH_NAME="x86-64"
         fi
-        URL="${SDK_URL}${VERSION}/targets/${DIR}/openwrt-sdk-${VERSION}-${ARCH}_gcc-8.4.0_musl.Linux-${ARCH}.tar.xz"
+        URL="${SDK_URL}${VERSION}/targets/${DIR}/openwrt-sdk-${VERSION}-${ARCH_NAME}_gcc-8.4.0_musl.Linux-${ARCH}.tar.xz"
         echo $URL
         curl -fL -m 60 -o sdk.tar.xz $URL
         tar -xf sdk.tar.xz
