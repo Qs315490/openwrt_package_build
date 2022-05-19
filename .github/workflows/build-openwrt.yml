@@ -22,7 +22,7 @@ on:
         default: '21.02.3'
       Package:
         description: '软件包位置'
-        default: 'package/openwrt-fullconenat/compile'
+        default: 'package/luci-app-fullconenat/compile'
 
 env:
   ARCH: ${{ github.event.inputs.Arch }}
