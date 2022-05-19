@@ -20,6 +20,9 @@ on:
       Version:
         description: '版本号'
         default: '21.02.3'
+      Package:
+        description: '软件包位置'
+        default: 'package/iptables-mod-fullconenat/compile'
 
 env:
   ARCH: ${{ github.event.inputs.Arch }}
@@ -104,7 +107,7 @@ jobs:
       run: |
         cd openwrt
         echo -e "$(nproc) thread compile"
-        make -j$(nproc) || make -j1 || make -j1 V=s
+        make -j$(nproc) ${{ github.event.inputs.Package }} || make -j1 ${{ github.event.inputs.Package }} || make -j1 V=s ${{ github.event.inputs.Package }}
         echo "::set-output name=status::success"
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
 
