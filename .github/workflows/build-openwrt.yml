@@ -22,7 +22,7 @@ on:
         default: '21.02.3'
       Package:
         description: '软件包位置'
-        default: 'package/iptables-mod-fullconenat/compile'
+        default: 'package/openwrt-fullconenat/compile'
 
 env:
   ARCH: ${{ github.event.inputs.Arch }}
