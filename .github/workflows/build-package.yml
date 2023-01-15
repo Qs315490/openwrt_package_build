@@ -8,25 +8,28 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: Build OpenWrt
+name: Build OpenWrt Package
 
 on:
-  repository_dispatch:
   workflow_dispatch:
     inputs:
       Arch:
-        description: '目标架构'
-        default: 'x86_64'
+        description: 目标架构
+        default: x86-64
       Version:
-        description: '版本号'
-        default: '21.02.3'
+        description: 版本号
+        type: choice
+        default: '21.02.5'
+        options:
+          - '22.03.3'
+          - '21.02.5'
       Package:
-        description: '软件包位置'
-        default: 'luci-app-fullconenat'
+        description: 软件包
+        default: luci-app-openclash
 
 env:
-  ARCH: ${{ github.event.inputs.Arch }}
-  VERSION: ${{ github.event.inputs.Version }}
+  ARCH: ${{ inputs.Arch }}
+  VERSION: ${{ inputs.Version }}
   SDK_URL: https://downloads.openwrt.org/releases/
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .config
@@ -56,43 +59,46 @@ jobs:
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
 
-    - name: Download SDK
+    - name: 下载 SDK
       working-directory: /workdir
       run: |
         df -hT $PWD
-        if [[ ${ARCH} == "x86_64" ]]; then
-          export DIR="x86/64"
-          export ARCH_NAME="x86-64"
-        fi
-        URL="${SDK_URL}${VERSION}/targets/${DIR}/openwrt-sdk-${VERSION}-${ARCH_NAME}_gcc-8.4.0_musl.Linux-${ARCH}.tar.xz"
-        echo $URL
+        case $VERSION in
+        '22.03.3')
+          GCC_VERSION='11.2.0';;
+        '21.02.5')
+          GCC_VERSION='8.4.0';;
+        *)
+          echo 出现错误: 版本号 $VERSION 无效;;
+        esac
+        URL="${SDK_URL}${VERSION}/targets/${ARCH/-//}/openwrt-sdk-${VERSION}-${ARCH}_gcc-${GCC_VERSION}_musl.Linux-x86_64.tar.xz"
+        echo 将下载 $URL
         curl -fL -m 60 -o sdk.tar.xz $URL
         tar -xf sdk.tar.xz -C /workdir
         ls -l /workdir
         mv /workdir/openwrt-sdk* /workdir/openwrt
-        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
-    - name: Load custom feeds
+    - name: 载入自定义源文件和自定义脚本1
       run: |
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
         chmod +x $DIY_P1_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P1_SH
 
-    - name: Update feeds
+    - name: 更新 feeds
       run: cd openwrt && ./scripts/feeds update -a
 
-    - name: Install feeds
+    - name: 安装 feeds
       run: cd openwrt && ./scripts/feeds install -a
 
-    - name: Load custom configuration
+    - name: 载入配置文件
       run: |
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
         chmod +x $DIY_P2_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
 
-    - name: Download package
+    - name: 预下载包
       id: package
       run: |
         cd openwrt
@@ -101,7 +107,7 @@ jobs:
         # find dl -size -1024c -exec ls -l {} \;
         # find dl -size -1024c -exec rm -f {} \;
 
-    - name: Compile the Packages
+    - name: 编译软件包
       id: compile
       run: |
         cd openwrt
@@ -110,7 +116,7 @@ jobs:
         echo "::set-output name=status::success"
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
 
-    - name: Check space usage
+    - name: 检查空间使用
       if: (!cancelled())
       run: df -hT
 
@@ -127,11 +133,3 @@ jobs:
         retain_days: 1
         keep_minimum_runs: 3
 
-    - name: Remove old Releases
-      uses: dev-drprasad/delete-older-releases@v0.1.0
-      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
-      with:
-        keep_latest: 3
-        delete_tags: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
