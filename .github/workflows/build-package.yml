@@ -76,25 +76,29 @@ jobs:
         echo 将下载 $URL
         curl -fL -m 60 -o sdk.tar.xz $URL
         tar -xf sdk.tar.xz -C /workdir
-        ls -l /workdir
-        mv /workdir/openwrt-sdk* /workdir/openwrt
+        ls -l 
+        mv openwrt-sdk* openwrt
 
     - name: 载入自定义源文件和自定义脚本1
       run: |
+        working-directory: /workdir
         ls -l
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
         chmod +x $DIY_P1_SH
-        cd /workdir/openwrt
+        cd openwrt
         $GITHUB_WORKSPACE/$DIY_P1_SH
 
     - name: 更新 feeds
+      working-directory: /workdir
       run: cd openwrt && ./scripts/feeds update -a
 
     - name: 安装 feeds
-      run: cd openwrt && ./scripts/feeds install -a
+      working-directory: /workdir
+      run: cd openwrt&& ./scripts/feeds install -a
 
     - name: 载入配置文件
       run: |
+        working-directory: /workdir
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
         chmod +x $DIY_P2_SH
         cd openwrt
@@ -102,6 +106,7 @@ jobs:
 
     - name: 预下载包
       id: package
+      working-directory: /workdir
       run: |
         cd openwrt
         make defconfig
@@ -110,6 +115,7 @@ jobs:
         # find dl -size -1024c -exec rm -f {} \;
 
     - name: 编译软件包
+      working-directory: /workdir
       id: compile
       run: |
         cd openwrt
