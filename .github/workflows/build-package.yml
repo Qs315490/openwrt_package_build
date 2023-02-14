@@ -65,7 +65,7 @@ jobs:
       run: |
         df -hT $PWD
         case $VERSION in
-        ['22.03.2', '22.03.3'])
+        ['22.03.2','22.03.3'])
           GCC_VERSION='11.2.0';;
         '21.02.5')
           GCC_VERSION='8.4.0';;
