@@ -19,14 +19,14 @@ on:
       Version:
         description: 版本号
         type: choice
-        default: '21.02.5'
+        default: '22.03.2'
         options:
           - '22.03.3'
           - '22.03.2'
           - '21.02.5'
       Package:
         description: 软件包
-        default: luci-app-openclash
+        default: luci-app-vlmcsd
 
 env:
   ARCH: ${{ inputs.Arch }}
@@ -81,7 +81,7 @@ jobs:
 
     - name: 载入自定义源文件和自定义脚本1
       run: |
-        ls -l /workdir
+        ls -l
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
         chmod +x $DIY_P1_SH
         cd openwrt
