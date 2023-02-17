@@ -80,45 +80,41 @@ jobs:
         mv openwrt-sdk* openwrt
 
     - name: 载入自定义源文件和自定义脚本1
-      working-directory: /workdir
       run: |
         ls -l
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
         chmod +x $DIY_P1_SH
-        cd openwrt
+        cd /workdir/openwrt
         $GITHUB_WORKSPACE/$DIY_P1_SH
 
     - name: 更新 feeds
-      working-directory: /workdir
-      run: cd openwrt && ./scripts/feeds update -a
+      working-directory: /workdir/openwrt
+      run: ./scripts/feeds update -a
 
     - name: 安装 feeds
-      working-directory: /workdir
-      run: cd openwrt&& ./scripts/feeds install -a
+      working-directory: /workdir/openwrt
+      run: ./scripts/feeds install -a
 
     - name: 载入配置文件
-      working-directory: /workdir
       run: |
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
         chmod +x $DIY_P2_SH
-        cd openwrt
+        cd /workdir/openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
 
     - name: 预下载包
       id: package
-      working-directory: /workdir
+      working-directory: /workdir/openwrt
       run: |
-        cd openwrt
         make defconfig
         # make download -j8 ${{ github.event.inputs.Package }}
         # find dl -size -1024c -exec ls -l {} \;
         # find dl -size -1024c -exec rm -f {} \;
 
     - name: 编译软件包
-      working-directory: /workdir
+      working-directory: /workdir/openwrt
       id: compile
       run: |
-        cd openwrt
         echo -e "$(nproc) thread compile"
         make -j$(nproc) package/${{ github.event.inputs.Package }}/compile || make -j1 package/${{ github.event.inputs.Package }}/compile || make -j1 V=s package/${{ github.event.inputs.Package }}/compile
         echo "::set-output name=status::success"
