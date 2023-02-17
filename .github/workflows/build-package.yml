@@ -107,9 +107,9 @@ jobs:
       working-directory: /workdir/openwrt
       run: |
         make defconfig
-        make download -j8 ${{ github.event.inputs.Package }}
-        find dl -size -1024c -exec ls -l {} \;
-        find dl -size -1024c -exec rm -f {} \;
+        # make download -j8 ${{ github.event.inputs.Package }}
+        # find dl -size -1024c -exec ls -l {} \;
+        # find dl -size -1024c -exec rm -f {} \;
 
     - name: 编译软件包
       working-directory: /workdir/openwrt
