@@ -117,14 +117,11 @@ jobs:
         cd /workdir/openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
 
-    - name: 预下载包
+    - name: 预配置
       id: package
       working-directory: /workdir/openwrt
       run: |
         make defconfig
-        make download -j8 ${{ inputs.Package }}
-        find dl -size -1024c -exec ls -l {} \;
-        find dl -size -1024c -exec rm -f {} \;
 
     - name: 缓存 dl 目录
       uses: actions/cache@v2
