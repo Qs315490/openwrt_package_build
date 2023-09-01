@@ -2,10 +2,10 @@ build-essential
 clang
 flex
 bison
-g++
+g++ 
 gawk
 gcc-multilib
-g++-multilib
+g++-multilib 
 gettext
 git
 libncurses-dev
