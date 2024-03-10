@@ -18,8 +18,9 @@ on:
       Version:
         description: 版本号
         type: choice
-        default: '22.03.2'
+        default: '23.05.2'
         options:
+          - '23.05.2'
           - '22.03.5'
           - '22.03.2'
           - '21.02.5'
